@@ -1,0 +1,60 @@
+services:
+
+    sql:
+        container_name: sqlserver2022
+        hostname: sqlserver
+        image: mcr.microsoft.com/mssql/server:2022-latest
+        platform: linux/amd64
+        restart: always
+        environment:
+            - SA_PASSWORD=${SQLPASSWORD}
+            - ACCEPT_EULA=Y
+            - MSSQL_DATA_DIR=/var/opt/mssql/data
+            - MSSQL_LOG_DIR=/var/opt/mssql/log
+            - MSSQL_BACKUP_DIR=/var/opt/mssql/backup
+        ports:
+            - 1433:1433
+        volumes:
+            - sqlVolume:/var/opt/mssql
+
+    redis-pubsub:
+        container_name: redis-pubsub
+        hostname: redis-pubsub
+        image: redis:6.2.17
+        restart: always
+        ports:
+            - 16379:6379
+        volumes:
+            - redisPubSubVolume:/root/redis
+            # - /path/to/local/redis.conf:/usr/local/etc/redis/redis.conf
+        environment:
+            - REDIS_PASSWORD=${REDISPASSWORD}
+            - REDIS_PORT=6379
+            - REDIS_DATABASES=1
+
+    redis-pubsub-outbox:
+        container_name: redis-pubsub-outbox
+        hostname: redis-outbox
+        image: redis:6.2.17
+        restart: always
+        ports:
+            - 26379:6379
+        volumes:
+            - redisPubSubOutboxVolume:/root/redis
+            # - /path/to/local/redis.conf:/usr/local/etc/redis/redis.conf
+        environment:
+            - REDIS_PASSWORD=${REDISPASSWORD}
+            - REDIS_PORT=6379
+            - REDIS_DATABASES=1
+volumes:
+    redisPubSubVolume:
+        driver: local
+    redisPubSubOutboxVolume:
+        driver: local
+    sqlVolume:
+        driver: local
+
+ # (Get-NetIPAddress -AddressFamily IPv4 -InterfaceAlias 'vEthernet (WSL)').IPAddress
+        # run.ps1
+        # docker compose --env-file .compose.dev up -d
+        # docker compose --env-file .compose.dev stop

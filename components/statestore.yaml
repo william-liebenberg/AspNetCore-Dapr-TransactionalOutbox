@@ -1,0 +1,35 @@
+apiVersion: dapr.io/v1alpha1
+kind: Component
+metadata:
+  name: statestore
+spec:
+  type: state.sqlserver
+  version: v1
+  metadata:
+    # Authenticate using SQL Server credentials
+    - name: connectionString
+      value: |
+        Server=localhost,1433;Database=transactionalOutbox;User Id=sa;Password=X!@WhatIsAPa55word;TrustServerCertificate=True;
+
+    - name: tableName
+      value: "States"
+    - name: metadataTableName
+      value: "dapr_metadata"
+    - name: schema
+      value: "dbo"
+    - name: outboxPublishPubsub # Required
+      value: "pubsub"
+    - name: outboxPublishTopic # Required
+      value: "orders"
+    - name: outboxPubsub # Optional
+      value: "outboxPubsub"
+    - name: outboxDiscardWhenMissingState #Optional. Defaults to false
+      value: "false"
+    - name: cleanupIntervalInSeconds
+      value: "10"
+    - name: redeliverInterval
+      value: "10"
+#    - name: processingTimeout
+#      value: "5"
+#    - name: contentType
+#      value: "application/json"
